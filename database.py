@@ -2,32 +2,26 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
 def get_connection():
-    # Coleta as variáveis das Secrets
-    db_user = os.getenv("DB_USER")
-    db_pass = os.getenv("DB_PASS")
-    db_host = os.getenv("DB_HOST")
-    db_name = os.getenv("DB_NAME")
-    db_port = os.getenv("DB_PORT", "5432") # Padrão 5432 se não achar
-
-    # Validação Crítica: Verifica se as variáveis foram carregadas
-    if not all([db_user, db_pass, db_host, db_name]):
-        raise ValueError("Erro: Uma ou mais variáveis de ambiente (Secrets) não foram encontradas pelo Streamlit.")
-
-    # String de conexão robusta (DSN)
-    dsn = (
-        f"dbname={db_name} "
-        f"user={db_user} "
-        f"password={db_pass} "
-        f"host={db_host} "
-        f"port={db_port} "
-        f"sslmode=require"
-    )
-
-    return psycopg2.connect(dsn)
+    try:
+        # Usa o st.secrets que é o padrão ouro do Streamlit
+        # Isso vai ler as chaves que você colou no passo 1
+        dsn = (
+            f"dbname={st.secrets['DB_NAME']} "
+            f"user={st.secrets['DB_USER']} "
+            f"password={st.secrets['DB_PASS']} "
+            f"host={st.secrets['DB_HOST']} "
+            f"port={st.secrets['DB_PORT']} "
+            f"sslmode=require"
+        )
+        return psycopg2.connect(dsn)
+    except Exception as e:
+        st.error(f"Erro de conexão: {e}")
+        raise e
 
 def init_db():
     conn = None
