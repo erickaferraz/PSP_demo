@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+psycopg2-binary
+python-dotenv
+fpdf
+xlsxwriter
+numpy
