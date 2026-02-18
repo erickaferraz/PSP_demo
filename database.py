@@ -6,16 +6,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_connection():
-    # Buscando as variáveis
-    user = os.getenv("DB_USER")
-    pw = os.getenv("DB_PASS")
-    host = os.getenv("DB_HOST")
-    db = os.getenv("DB_NAME")
-    
-    # Criando a string de conexão (DSN)
-    # Se host for None, o erro vai ficar claro aqui
-    dsn = f"dbname={db} user={user} password={pw} host={host} port=5432 sslmode=require"
-    
+    # Coleta as variáveis das Secrets
+    db_user = os.getenv("DB_USER")
+    db_pass = os.getenv("DB_PASS")
+    db_host = os.getenv("DB_HOST")
+    db_name = os.getenv("DB_NAME")
+    db_port = os.getenv("DB_PORT", "5432") # Padrão 5432 se não achar
+
+    # Validação Crítica: Verifica se as variáveis foram carregadas
+    if not all([db_user, db_pass, db_host, db_name]):
+        raise ValueError("Erro: Uma ou mais variáveis de ambiente (Secrets) não foram encontradas pelo Streamlit.")
+
+    # String de conexão robusta (DSN)
+    dsn = (
+        f"dbname={db_name} "
+        f"user={db_user} "
+        f"password={db_pass} "
+        f"host={db_host} "
+        f"port={db_port} "
+        f"sslmode=require"
+    )
+
     return psycopg2.connect(dsn)
 
 def init_db():
