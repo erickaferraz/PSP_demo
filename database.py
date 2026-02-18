@@ -5,18 +5,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import psycopg2
-import os
-
 def get_connection():
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
-        port=os.getenv("DB_PORT"),
-        sslmode='require'  # <--- ESSENCIAL PARA O NEON
-    )
+    # Buscando as variáveis
+    user = os.getenv("DB_USER")
+    pw = os.getenv("DB_PASS")
+    host = os.getenv("DB_HOST")
+    db = os.getenv("DB_NAME")
+    
+    # Criando a string de conexão (DSN)
+    # Se host for None, o erro vai ficar claro aqui
+    dsn = f"dbname={db} user={user} password={pw} host={host} port=5432 sslmode=require"
+    
+    return psycopg2.connect(dsn)
 
 def init_db():
     conn = None
